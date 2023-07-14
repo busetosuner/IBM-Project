@@ -4,23 +4,29 @@ import sys
 
 
 #Hangi data formatında kontrol ediyor
-def check_data_format(file_path):
+def check_data_format(file_path, df):
     _, file_extension = os.path.splitext(file_path)
     
     if file_extension == '.csv':
+        df = pd.read_csv(file_path)
         return 'csv'
     elif file_extension == '.xlsx' or file_extension == '.xls':
+        df = pd.read_excel(file_path)
         return 'excel'
     elif file_extension == '.json':
+        df = pd.read_json(file_path)
         return 'json'
     else:
         return None
 
 file_path = 'DataScienceSalaries.csv'  
 
-df = pd.read_csv('DataScienceSalaries.csv')
+# Creating empty dataFrame
+df = pd.DataFrame()
 
-data_format = check_data_format(file_path)
+# Reading dataset by file format
+data_format = check_data_format(file_path, df)
+
 # Eğer 3 data formatından biri değilse bitirecek
 if data_format is None:
     print("Error")
