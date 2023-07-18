@@ -4,9 +4,16 @@ import sys
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
  # pip install scikit-learn yapmalısın
+from scipy.stats import f_oneway
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+
 
 
 #Hangi data formatında kontrol ediyor
+
 def check_data_format(file_path):
     _, file_extension = os.path.splitext(file_path)
     
@@ -36,16 +43,17 @@ df = pd.read_csv(file_path)
 data_format = check_data_format(file_path)
 
 
-# Eğer 3 data formatından biri değilse bitirecek
-if data_format is None:
-    print("Error")
-    sys.exit()
-else: # Burayı yazdırıyor burayla daha bir şey yaparız diye düşündüm ihtiyaç olursa
-    print("Dataset:", data_format)
+
+
+
+
 
 
 # DUPLICATE BOLUMU BASLANGICI
 # Eğer duplicate varsa sayması için
+
+
+
 def count_duplicates(df):
     # Satırda yinelenen varsa
     duplicated_rows = df.duplicated()
@@ -67,12 +75,14 @@ def count_duplicates(df):
 
 num_duplicates_rows, num_duplicates_columns, num_duplicates_rows_among_columns, num_duplicates_rows_all_columns = count_duplicates(df)
 
-# Toplam duplicate sayısı hesaplama
-total_duplicates = num_duplicates_rows + num_duplicates_columns + num_duplicates_rows_among_columns + num_duplicates_rows_all_columns
 
-print("Duplicate number:", total_duplicates)
+def print_duplicate():
+    # Toplam duplicate sayısı hesaplama
+    total_duplicates = num_duplicates_rows + num_duplicates_columns + num_duplicates_rows_among_columns + num_duplicates_rows_all_columns
 
+    print("Duplicate number:", total_duplicates)
 
+print_duplicate()
 
 
 # Burası da temizleme kısmı
@@ -97,16 +107,31 @@ def clean_duplicates(df):
 
 df_cleaned= clean_duplicates(df)
 
+def check_duplicate():
+    # Temizlenmiş DataFrame'i kontrol etme
+    print(df_cleaned.shape)  # DataFrame'in boyutunu yazdırma
 
-# Temizlenmiş DataFrame'i kontrol etme
-print(df_cleaned.shape)  # DataFrame'in boyutunu yazdırma
+    # Temizlendikten sonra sorun var mı check'i
+    total_duplicates_after_cleaning = count_duplicates(df_cleaned)
 
-# Temizlendikten sonra sorun var mı check'i
-total_duplicates_after_cleaning = count_duplicates(df_cleaned)
+    print("Duplicate number after cleaning:", sum(total_duplicates_after_cleaning))
+        
+check_duplicate()       
 
-print("Duplicate number after cleaning:", sum(total_duplicates_after_cleaning))
-    
-    
+
+# DUPLICATE SONU
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Categorical ve Numerical Data'yı ayırma bölümü
   
@@ -130,69 +155,101 @@ def detect_outliers(data, threshold=3):
         outliers.extend(data[column][np.abs(z_scores) > threshold])
     return outliers
 
-outliers = detect_outliers(numeric_data)
 
-# Outlierları çıkarmak için
-df_cleaned_no_outliers = df_cleaned.drop(pd.DataFrame(outliers).reset_index(drop=True))
+def print_outliers():
+    global outliers, df_cleaned_no_outliers, outlier_percentage
+    
+    
+    outliers = detect_outliers(numeric_data)
 
-# Outlierların veri setindeki yüzdesini hesaplamak (outlierların veri setine etkisini görmek için)
-outlier_percentage = len(outliers) / len(df_cleaned) * 100
+    # Outlierları çıkarmak için
+    df_cleaned_no_outliers = df_cleaned.drop(pd.DataFrame(outliers).reset_index(drop=True))
+
+    # Outlierların veri setindeki yüzdesini hesaplamak (outlierların veri setine etkisini görmek için)
+    outlier_percentage = len(outliers) / len(df_cleaned) * 100
 
 
-print("Outliers:", outliers)
-#print("Veri Seti Sütunlari:", df_cleaned.columns)
+    print("Outliers:", outliers)
+    #print("Veri Seti Sütunlari:", df_cleaned.columns)
 
-# Normalization
-scaler = MinMaxScaler()
-normalized_data = scaler.fit_transform(df_cleaned_no_outliers[numeric_columns])
-df_normalized = pd.DataFrame(normalized_data, columns=numeric_columns)
 
-# Standardization
-scaler = StandardScaler()
-standardized_data = scaler.fit_transform(df_cleaned_no_outliers[numeric_columns])
-df_standardized = pd.DataFrame(standardized_data, columns=numeric_columns)
+print_outliers()
 
-print("Normalized Data:")
-print(df_normalized.head())
 
-print("Standardized Data:")
-print(df_standardized.head())
+
+
+
+
+
+
+# NORMALIZATION
+
+def normalization():
+    scaler = MinMaxScaler()
+    normalized_data = scaler.fit_transform(df_cleaned_no_outliers[numeric_columns])
+    df_normalized = pd.DataFrame(normalized_data, columns=numeric_columns)
+    print("Normalized Data:")
+    print(df_normalized.head())
+
+normalization()
+
+
+
+# STANDARDIZATION
+
+def standardization():
+    scaler = StandardScaler()
+    standardized_data = scaler.fit_transform(df_cleaned_no_outliers[numeric_columns])
+    df_standardized = pd.DataFrame(standardized_data, columns=numeric_columns)
+    print("Standardized Data:")
+    print(df_standardized.head())
+
+standardization()
+
+
 
 
 # CATEGORICAL DATA
 # Get headers
-headers = df.columns.values
 
-# Dummy variables 
+def categorical_dummy():
+    global headers, df_new
+    headers = df.columns.values
 
-# Keep original file, create new one
-df_new = df
+    # Dummy variables 
 
-pd.options.mode.chained_assignment = None
+    # Keep original file, create new one
+    df_new = df
 
-# for each column if there are equal or less than 3 unşque values turn into dummy variables
-for header in headers:
-    if (df[header].nunique() <= 3):
+    pd.options.mode.chained_assignment = None
 
-        # Create new dataframe for dummy variables
-        dummy_variable = pd.get_dummies(df[header], prefix=header)
+    # for each column if there are equal or less than 3 unşque values turn into dummy variables
+    for header in headers:
+        if (df[header].nunique() <= 3):
 
-        # Turn True/False into 1/0 
-        dummy_variable = dummy_variable.astype(int)
+            # Create new dataframe for dummy variables
+            dummy_variable = pd.get_dummies(df[header], prefix=header)
 
-        # Add to main dataframe
-        df_new = pd.concat([df_new, dummy_variable], axis=1)
+            # Turn True/False into 1/0 
+            dummy_variable = dummy_variable.astype(int)
 
-        # Drop the original column
-        df_new.drop(header, axis=1, inplace=True)
+            # Add to main dataframe
+            df_new = pd.concat([df_new, dummy_variable], axis=1)
 
-# Export the new file -this lines will be deleted after other steps is completed-
+            # Drop the original column
+            df_new.drop(header, axis=1, inplace=True)
 
-path = r'C:\Users\User\OneDrive\Masaüstü\IBM-datasets' #Buse
-# path = 'C:\\Users\\hacer\\OneDrive\\Masaüstü\\IBM\\datasets\\' #Hacer
+    # Export the new file -this lines will be deleted after other steps is completed-
+
+    path = r'C:\Users\User\OneDrive\Masaüstü\IBM-datasets' #Buse
+    # path = 'C:\\Users\\hacer\\OneDrive\\Masaüstü\\IBM\\datasets\\' #Hacer
 
 
-df_new.to_csv(path + "df.csv", index=False)
+    df_new.to_csv(path + "df.csv", index=False)
+
+
+categorical_dummy()
+
 
 
 
@@ -202,40 +259,51 @@ df_new.to_csv(path + "df.csv", index=False)
 
 #HANDLING MISSING DATA
 
-# Get headers
-headers = df.columns.values
-
-# Identify missing values -assuming missing values represented '?' symbol in dataset-
-df.replace("?", np.nan, inplace = True)
 
 
-# Count missing values per column
-missing_data = df.isnull()
-missing_data_counts = []
+def missing_data():
+    global df_new
+    # Get headers
+    headers = df.columns.values
 
-for column in missing_data.columns.values.tolist():
-    missing_data_counts.append(missing_data[column].value_counts())
+    # Identify missing values -assuming missing values represented '?' symbol in dataset-
+    df.replace("?", np.nan, inplace = True)
 
-"""
- Handling missing data methods  
-    - Remove the missing data - entire row-
-    - Retain data missing
-    - Filling missing values previous one, next one
-    - Replace with mean/mode/median
-    - Replace it by frequency
- To achieve more reliable results, the following methods will be applied in this project:
-    - Missing numeric values will be replaced with mean value in the column
-    - Missing strings will be replaces with most frequencist value in the column
-    - If the missing values is in the target column, then the row will be dropped
-"""
 
-# Missing data in target column
+    # Count missing values per column
+    missing_data = df.isnull()
+    missing_data_counts = []
 
-# target will be determined by the user, in this case it is just random
-target = headers[2]
+    for column in missing_data.columns.values.tolist():
+        missing_data_counts.append(missing_data[column].value_counts())
 
-# the original dataset will be protected, ?we can create new dataset file for other steps?
-df_new = df.dropna(subset=[target], axis=0)
+    """
+    Handling missing data methods  
+        - Remove the missing data - entire row-
+        - Retain data missing
+        - Filling missing values previous one, next one
+        - Replace with mean/mode/median
+        - Replace it by frequency
+    To achieve more reliable results, the following methods will be applied in this project:
+        - Missing numeric values will be replaced with mean value in the column
+        - Missing strings will be replaces with most frequencist value in the column
+        - If the missing values is in the target column, then the row will be dropped
+    """
+
+    # Missing data in target column
+
+    # target will be determined by the user, in this case it is just random
+    target = headers[2]
+
+    # the original dataset will be protected, ?we can create new dataset file for other steps?
+    df_new = df.dropna(subset=[target], axis=0)
+    
+    
+missing_data()    
+
+
+
+
 
 # Missing strings and numeric values
 
@@ -247,27 +315,109 @@ def is_numeric(col):
         return False
 
 # because of creating copy of dataframe, prevent the chained assignment error 
-pd.options.mode.chained_assignment = None
+def prevent():
+    pd.options.mode.chained_assignment = None
 
-for header in headers:
-    if is_numeric(df[header]) :
-        avg = df_new[header].astype('float').mean(axis=0) 
+    for header in headers:
+        if is_numeric(df[header]) :
+            avg = df_new[header].astype('float').mean(axis=0) 
 
-        avg = int(avg) # year, age, model cannot be float
-        df_new[header].replace(np.nan, avg, inplace= True)
-    else:
-        most_common = df_new[header].value_counts().idxmax()
-        df_new[header].replace(np.nan, most_common, inplace=True)
-
-
-print(df_new)
+            avg = int(avg) # year, age, model cannot be float
+            df_new[header].replace(np.nan, avg, inplace= True)
+        else:
+            most_common = df_new[header].value_counts().idxmax()
+            df_new[header].replace(np.nan, most_common, inplace=True)
 
 
+    print(df_new)
 
 
-
-
+prevent()
 
 
 
 
+
+
+# DEA  ----- Descriptive Statistics/// Group By /// ANOVA /// Correlation
+
+
+# ANOVA
+
+# Her bir kategorik satırdaki columnları karşılaştırdı ama kullanıcıya sorarak da ilerleyebiliriz hangi sütunları karşılaştırmak istiyorsun diye
+
+# Column bulma categorical için
+
+
+
+def anova():
+    global categorical_columns
+    categorical_columns = df_new.select_dtypes(include='object').columns
+
+    # Column bulma numerical data icin
+    numeric_columns = df_new.select_dtypes(include='number').columns
+
+    for column in categorical_columns:
+        groups = df_new[column].unique() # Columndaki grupları alma
+        
+        # Gruplar arasında istatistiksel olarak anlamlı farklılık testi
+        
+        group_data = [df_new[df_new[column] == group][numeric_columns] for group in groups] # Sayısal değişkeni ve grupları kullanarak verileri oluşturma
+        
+        stat, p_value = f_oneway(*group_data) # Anova analizi
+        
+        print(f"Column: {column} | ANOVA Stats: {stat} | p-value: {p_value}")
+
+
+anova()
+
+# Görselleştirmek için çok seçenek var: Çubuk grafiği, kutu grafikleri vs.
+
+
+def graphic_anova():
+    for column in categorical_columns:
+        groups = df_new[column].unique()
+        anova_stats = []
+        
+        for group in groups:
+            data = df_new[df_new[column] == group][numeric_columns]
+            stat, p_value = f_oneway(*data.T.values)
+            anova_stats.append(stat)
+        
+        plt.figure(figsize=(8, 6))
+        sns.barplot(x=groups, y=anova_stats)
+        plt.xlabel(column)
+        plt.ylabel('ANOVA Stats')
+        plt.title(f'ANOVA: {column}')
+        plt.show()
+        
+        
+        
+        
+        
+# CORRELATION
+
+#Korelasyonun değeri -1 ile 1 arasında değişir. 1, mükemmel pozitif korelasyonu ifade ederken, -1 mükemmel negatif korelasyon
+# 0 ise iki değişken arasında bir ilişki olmadığını gösterir.
+
+# Burada kullanıcıya sorabiliriz korelasyon etmek istediğiniz sütunu seçin şeklinde
+
+
+def correlation():
+    global correlation_matrix
+    numeric_columns = df_new.select_dtypes(include='number').columns
+
+    # Korelasyon matrisini hesaplama
+    correlation_matrix = df_new[numeric_columns].corr()
+
+    #  Korelasyon matrisi, tüm sayısal sütunlar arasındaki ikili korelasyonları gösterir. Her sütunun diğer sütunlarla olan korelasyonunu görmek için matrisin tamamı
+
+    print(correlation_matrix)
+
+    # Görselleştirmek icin
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+    plt.title('Korelasyon Matrisi')
+    plt.show()
+    
+correlation()
