@@ -1,6 +1,3 @@
-
-# DUPLICATE BOLUMU BASLANGICI
-# Eğer duplicate varsa sayması için
 def count_duplicates(df):
     # Satırda yinelenen varsa
     duplicated_rows = df.duplicated()
@@ -20,18 +17,32 @@ def count_duplicates(df):
 
     return num_duplicates_rows, num_duplicates_columns, num_duplicates_rows_among_columns, num_duplicates_rows_all_columns
 
-num_duplicates_rows, num_duplicates_columns, num_duplicates_rows_among_columns, num_duplicates_rows_all_columns = count_duplicates(df)
 
-# Toplam duplicate sayısı hesaplama
-total_duplicates = num_duplicates_rows + num_duplicates_columns + num_duplicates_rows_among_columns + num_duplicates_rows_all_columns
+def print_duplicate(df):
+    num_duplicates_rows, num_duplicates_columns, num_duplicates_rows_among_columns, num_duplicates_rows_all_columns = count_duplicates(df)
 
-print("Duplicate number:", total_duplicates)
+    # Toplam duplicate sayısı hesaplama
+    total_duplicates = num_duplicates_rows + num_duplicates_columns + num_duplicates_rows_among_columns + num_duplicates_rows_all_columns
+
+    print("Duplicate number:", total_duplicates)
 
 
+def check_duplicate(df):
+    
+    # Temizlenmiş DataFrame'i kontrol etme
+    print(df.shape)  # DataFrame'in boyutunu yazdırma
+
+    # Temizlendikten sonra sorun var mı check'i
+    total_duplicates_after_cleaning = count_duplicates(df)
+
+    print("Duplicate number after cleaning:", sum(total_duplicates_after_cleaning))
+             
 
 
 # Burası da temizleme kısmı
 def clean_duplicates(df):
+
+    print_duplicate(df)
     # Satır düzeyinde yinelenen varsa
     duplicated_rows = df.duplicated()
 
@@ -47,17 +58,7 @@ def clean_duplicates(df):
     # Yinelenen değerleri düzeltme fonksiyonu
     df_cleaned = df.drop_duplicates()
 
+    check_duplicate(df_cleaned)
+
     return df_cleaned
 
-
-df_cleaned= clean_duplicates(df)
-
-
-# Temizlenmiş DataFrame'i kontrol etme
-print(df_cleaned.shape)  # DataFrame'in boyutunu yazdırma
-
-# Temizlendikten sonra sorun var mı check'i
-total_duplicates_after_cleaning = count_duplicates(df_cleaned)
-
-print("Duplicate number after cleaning:", sum(total_duplicates_after_cleaning))
-    
