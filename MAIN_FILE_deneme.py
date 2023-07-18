@@ -39,18 +39,32 @@ def check_data_format(file_path):
 
 file_path = 'DataScienceSalaries.csv'  
 
-df = pd.read_csv(file_path)
-data_format = check_data_format(file_path)
-
-
-
-
+df = check_data_format(file_path)
 
 
 
 
 # DUPLICATE BOLUMU BASLANGICI
 # Eğer duplicate varsa sayması için
+
+
+
+
+
+headers = df.columns.tolist()
+
+get_information = input("Would you like to see the data by attributes you want? (Y/N) ")
+
+if get_information.upper() == 'Y':
+    for i, header in enumerate(headers):
+        print(i, header)
+    group_list = [headers[int(item)] for item in input("Please enter the index of attributes you want: ").split()]
+    group_df = df.groupby(group_list, as_index=False)
+
+
+
+
+
 
 
 
@@ -127,7 +141,83 @@ check_duplicate()
 
 
 
+#HANDLING MISSING DATA
 
+
+
+def missing_data():
+    global df_new, headers
+    # Get headers
+    headers = df.columns.values
+
+    # Identify missing values -assuming missing values represented '?' symbol in dataset-
+    df.replace("?", np.nan, inplace = True)
+
+
+    # Count missing values per column
+    missing_data = df.isnull()
+    missing_data_counts = []
+
+    for column in missing_data.columns.values.tolist():
+        missing_data_counts.append(missing_data[column].value_counts())
+
+    """
+    Handling missing data methods  
+        - Remove the missing data - entire row-
+        - Retain data missing
+        - Filling missing values previous one, next one
+        - Replace with mean/mode/median
+        - Replace it by frequency
+    To achieve more reliable results, the following methods will be applied in this project:
+        - Missing numeric values will be replaced with mean value in the column
+        - Missing strings will be replaces with most frequencist value in the column
+        - If the missing values is in the target column, then the row will be dropped
+    """
+
+    # Missing data in target column
+
+    # target will be determined by the user, in this case it is just random
+    target = headers[2]
+
+    # the original dataset will be protected, ?we can create new dataset file for other steps?
+    df_new = df.dropna(subset=[target], axis=0)
+    
+    
+missing_data()    
+
+
+
+
+
+
+# Missing strings and numeric values
+
+def is_numeric(col):
+    try:
+        pd.to_numeric(col)
+        return True
+    except:
+        return False
+
+# because of creating copy of dataframe, prevent the chained assignment error 
+def prevent():
+    pd.options.mode.chained_assignment = None
+
+    for header in headers:
+        if is_numeric(df[header]) :
+            avg = df_new[header].astype('float').mean(axis=0) 
+
+            avg = int(avg) # year, age, model cannot be float
+            df_new[header].replace(np.nan, avg, inplace= True)
+        else:
+            most_common = df_new[header].value_counts().idxmax()
+            df_new[header].replace(np.nan, most_common, inplace=True)
+
+
+    print(df_new)
+
+
+prevent()
 
 
 
@@ -180,8 +270,6 @@ print_outliers()
 
 
 
-
-
 # NORMALIZATION
 
 def normalization():
@@ -205,6 +293,11 @@ def standardization():
     print(df_standardized.head())
 
 standardization()
+
+
+
+
+#############
 
 
 
@@ -255,84 +348,48 @@ categorical_dummy()
 
 
 
+#BINNING
+
+def binning(column, header):
+    if is_numeric(column):
+        
+        min_val = column.min()
+        max_val = column.max()
+        
+        #Binning using np.linspace
+        bins = np.linspace(min_val, max_val, num=4)
+        labels = ['Low', 'Medium', 'High']
+        
+        #Perform binning
+        
+        binned_column = pd.cut(column, bins=bins, labels=labels, include_lowest=True)
+        
+        #Updating df
+        df_new[header + '_binned'] = binned_column
+        
+        
+    else:
+        #Categorical column için
+        top_10_values = column.value_counts().head(10).index.tolist()
+        binned_column = column.apply(lambda x: x if x in top_10_values else 'Other')
+        
+        
+        #Updating df
+        df_new[header + '_binned'] = binned_column
 
 
-#HANDLING MISSING DATA
 
+# Iterating over columns
 
+for header in headers:
+    column = df[header]
+    binning(column, header)
 
-def missing_data():
-    global df_new
-    # Get headers
-    headers = df.columns.values
-
-    # Identify missing values -assuming missing values represented '?' symbol in dataset-
-    df.replace("?", np.nan, inplace = True)
-
-
-    # Count missing values per column
-    missing_data = df.isnull()
-    missing_data_counts = []
-
-    for column in missing_data.columns.values.tolist():
-        missing_data_counts.append(missing_data[column].value_counts())
-
-    """
-    Handling missing data methods  
-        - Remove the missing data - entire row-
-        - Retain data missing
-        - Filling missing values previous one, next one
-        - Replace with mean/mode/median
-        - Replace it by frequency
-    To achieve more reliable results, the following methods will be applied in this project:
-        - Missing numeric values will be replaced with mean value in the column
-        - Missing strings will be replaces with most frequencist value in the column
-        - If the missing values is in the target column, then the row will be dropped
-    """
-
-    # Missing data in target column
-
-    # target will be determined by the user, in this case it is just random
-    target = headers[2]
-
-    # the original dataset will be protected, ?we can create new dataset file for other steps?
-    df_new = df.dropna(subset=[target], axis=0)
-    
-    
-missing_data()    
+print("Binning:", df_new)
 
 
 
 
-
-# Missing strings and numeric values
-
-def is_numeric(col):
-    try:
-        pd.to_numeric(col)
-        return True
-    except:
-        return False
-
-# because of creating copy of dataframe, prevent the chained assignment error 
-def prevent():
-    pd.options.mode.chained_assignment = None
-
-    for header in headers:
-        if is_numeric(df[header]) :
-            avg = df_new[header].astype('float').mean(axis=0) 
-
-            avg = int(avg) # year, age, model cannot be float
-            df_new[header].replace(np.nan, avg, inplace= True)
-        else:
-            most_common = df_new[header].value_counts().idxmax()
-            df_new[header].replace(np.nan, most_common, inplace=True)
-
-
-    print(df_new)
-
-
-prevent()
 
 
 
@@ -407,8 +464,14 @@ def correlation():
     global correlation_matrix
     numeric_columns = df_new.select_dtypes(include='number').columns
 
+
+    for ele in group_list:
+        if(not is_numeric(df[ele])):
+            print("This elemant is not numerical: ", ele)
+            return
+        
     # Korelasyon matrisini hesaplama
-    correlation_matrix = df_new[numeric_columns].corr()
+    correlation_matrix = df[group_list].corr()
 
     #  Korelasyon matrisi, tüm sayısal sütunlar arasındaki ikili korelasyonları gösterir. Her sütunun diğer sütunlarla olan korelasyonunu görmek için matrisin tamamı
 
