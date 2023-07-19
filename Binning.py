@@ -1,39 +1,40 @@
+import pandas as pd
+import numpy as np
 
 #BINNING
 
-def binning(column, header):
-    if is_numeric(column):
+def is_numeric(col):
+    try:
+        pd.to_numeric(col)
+        return True
+    except:
+        return False
+
+def make_bins(df, header):
+    if is_numeric(df[header]):
         
-        min_val = column.min()
-        max_val = column.max()
+        min_val = df[header].min()
+        max_val = df[header].max()
         
         #Binning using np.linspace
         bins = np.linspace(min_val, max_val, num=4)
         labels = ['Low', 'Medium', 'High']
         
-        #Perform binning
+        # Perform binning       
+        binned_column = pd.cut(df[header], bins=bins, labels=labels, include_lowest=True)
         
-        binned_column = pd.cut(column, bins=bins, labels=labels, include_lowest=True)
-        
-        #Updating df
-        df_new[header + '_binned'] = binned_column
-        
+        # Updating df
+        df[header + '_binned'] = binned_column
         
     else:
-        #Categorical column için
-        top_10_values = column.value_counts().head(10).index.tolist()
-        binned_column = column.apply(lambda x: x if x in top_10_values else 'Other')
+        # Categorical column
+        top_10_values = df[header].value_counts().head(10).index.tolist()
+        binned_column = df[header].apply(lambda x: x if x in top_10_values else 'Other')
         
-        
-        #Updating df
-        df_new[header + '_binned'] = binned_column
+        # Updating df
+        df[header + '_binned'] = binned_column
+    
+    # Drop the original column
+    df.drop(header, axis=1, inplace=True)
 
-
-
-# Iterating over columns
-
-for header in headers:
-    column = df[header]
-    binning(column, header)
-
-print("Binning:", df_new)
+    return df, header + "_binned"
