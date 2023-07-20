@@ -5,6 +5,7 @@ import Duplicates
 import numpy as np
 import dummy_variables
 import Binning
+import Numerical_Data
 
 # Path will be given by user
 file_path = 'C:\\Users\\hacer\\OneDrive\\Masaüstü\\IBM\\datasets\\'
@@ -28,7 +29,13 @@ group_list = [headers[int(item)] for item in input("Please enter the index of at
 df = handle_missing_values.clean_missing(df, target)
 
 df = Duplicates.clean_duplicates(df)
+print("DF: \n",df.head())
 
+df = Numerical_Data.drop_outliers(df)
+df = Numerical_Data.normalization(df)
+df = Numerical_Data.standardization(df)
+
+print("DF: \n",df.head())
 # Create  dictionary that keeps attribute names, while addingg dummy columns or creating bins update dictionary to get this new added columns
 mp = {}
 
@@ -52,3 +59,5 @@ print("Check if the dictionary is working:" )
 print("\n",df[mp["company_size"]].head())
 print("\n New columns: ", df.columns.values)
 print("\n",df.head())
+
+df.to_csv(file_path + "df_new.csv", index = False)
