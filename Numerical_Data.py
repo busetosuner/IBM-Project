@@ -1,18 +1,21 @@
 import pandas as pd
 import numpy as np
+import Binning
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 def numeric_columns(df):
     numeric_columns = []
     for column in df.columns:
-         if column != 'Unnamed: 0' and pd.api.types.is_numeric_dtype(df[column]):
+         if column != 'Unnamed: 0' and Binning.is_numeric(df[column]):
             numeric_columns.append(column)
+
     return numeric_columns
 
 # Outlier tespiti
 def detect_outliers(data, threshold=3):
     outliers = []
     for column in data.columns:
+        print(column)
         # Z-puanı için
         z_scores = (data[column] - data[column].mean()) / data[column].std()
         # Z-puanının threshold değerinden büyük olanları aykırı değer olarak işaretle
