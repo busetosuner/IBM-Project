@@ -6,6 +6,7 @@ import numpy as np
 import dummy_variables
 import Binning
 import Numerical_Data
+import pca
 
 # Path will be given by user
 file_path = 'C:\\Users\\hacer\\OneDrive\\Masaüstü\\IBM\\datasets\\'
@@ -31,7 +32,7 @@ df = handle_missing_values.clean_missing(df, target)
 df = Duplicates.clean_duplicates(df)
 print("DF: \n",df.head())
 
-df = Numerical_Data.drop_outliers(df)
+# df = Numerical_Data.drop_outliers(df)
 df = Numerical_Data.normalization(df)
 df = Numerical_Data.standardization(df)
 
@@ -43,7 +44,13 @@ for header in headers:
     mp[header] = header
 
 # After this point we get header names using dictionary
- 
+n_c = Numerical_Data.numeric_columns(df)
+
+df_t = df[n_c]
+print(n_c)
+
+pca.pca_analysis(df_t)
+
 for attribute in group_list:
     if (df[attribute].nunique() <= 5):
         # Pass numerical variables for sake of simplicity 
@@ -59,5 +66,7 @@ print("Check if the dictionary is working:" )
 print("\n",df[mp["company_size"]].head())
 print("\n New columns: ", df.columns.values)
 print("\n",df.head())
+
+
 
 df.to_csv(file_path + "df_new.csv", index = False)
