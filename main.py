@@ -81,3 +81,19 @@ print("\n New columns: ", df.columns.values)
 
 
 df.to_csv(file_path + "df_new.csv", index = False)
+
+#Regression
+model, mse, r2, df = Regression.perform_multiple_linear_regression(df, target, group_list, mp)
+
+# Print regression results
+print("\nMultiple Linear Regression Results:")
+print("Coefficients:", model.coef_)
+print("Intercept:", model.intercept_)
+print("Mean Squared Error (MSE):", mse)
+print("R-squared (R2):", r2)
+
+
+
+
+
+
