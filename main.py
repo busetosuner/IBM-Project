@@ -1,12 +1,17 @@
 import pandas as pd
-import Import_File
-import handle_missing_values
-import Duplicates
 import numpy as np
-import dummy_variables
+import seaborn as sns
+
+import Import_File
 import Binning
 import Numerical_Data
+import Duplicates
+
+import handle_missing_values
+import dummy_variables
 import pca
+import factor_analysis
+
 
 # Path will be given by user
 file_path = 'C:\\Users\\hacer\\OneDrive\\Masaüstü\\IBM\\datasets\\'
@@ -30,13 +35,12 @@ group_list = [headers[int(item)] for item in input("Please enter the index of at
 df = handle_missing_values.clean_missing(df, target)
 
 df = Duplicates.clean_duplicates(df)
-print("DF: \n",df.head())
 
 # df = Numerical_Data.drop_outliers(df)
 df = Numerical_Data.normalization(df)
 df = Numerical_Data.standardization(df)
 
-print("DF: \n",df.head())
+
 # Create  dictionary that keeps attribute names, while addingg dummy columns or creating bins update dictionary to get this new added columns
 mp = {}
 
@@ -45,13 +49,24 @@ for header in headers:
 
 # After this point we get header names using dictionary
 n_c = Numerical_Data.numeric_columns(df)
-
 df_t = df[n_c]
-print(n_c)
 
 pca.pca_analysis(df_t)
 
+df.drop(columns=df_t.columns, inplace= True)
+
+df_t = factor_analysis.feature_selection(df_t, target)
+
+df = pd.concat([df, df_t], axis = 1)
+
+
+print("\n",df_t.head())
+
+
 for attribute in group_list:
+    if not (attribute in df.columns):
+        print("Sorry, this attribute {} is not correlated to target".format(attribute))
+
     if (df[attribute].nunique() <= 5):
         # Pass numerical variables for sake of simplicity 
         if (Binning.is_numeric(df[attribute])):
@@ -62,11 +77,7 @@ for attribute in group_list:
         df, mp[attribute] = Binning.make_bins(df, attribute)
     print("\nNew columns of",attribute,":",mp[attribute])
 
-print("Check if the dictionary is working:" )
-print("\n",df[mp["company_size"]].head())
 print("\n New columns: ", df.columns.values)
-print("\n",df.head())
-
 
 
 df.to_csv(file_path + "df_new.csv", index = False)
