@@ -11,6 +11,7 @@ import handle_missing_values
 import dummy_variables
 import pca
 import factor_analysis
+import classification
 
 
 # Path will be given by user
@@ -69,6 +70,9 @@ for attribute in group_list:
     if not (attribute in df.columns):
         print("\nSorry, this attribute {} is not correlated to target".format(attribute))
         continue
+    if  (attribute == target):
+        print("\nSorry, the target cannot be encoded")
+        continue
 
     if (df[attribute].nunique() <= 5):
         # Pass numerical variables for sake of simplicity 
@@ -84,5 +88,6 @@ print("\n New columns: ", df.columns.values)
 
 # After this point we get header names using dictionary
 
+classification.KNN(df[Numerical_Data.numeric_columns(df)], df[mp[target]], 3)
 
 df.to_csv(file_path + "df_new.csv", index = False)
