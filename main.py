@@ -40,6 +40,23 @@ df = Duplicates.clean_duplicates(df)
 df = Numerical_Data.normalization(df)
 df = Numerical_Data.standardization(df)
 
+n_c = Numerical_Data.numeric_columns(df)
+df_numeric = df[n_c]
+
+if target in df_numeric.columns:
+    df_numeric = df_numeric.drop(target, axis = 1)
+ 
+pca.pca_analysis(df_numeric)
+
+df.drop(columns=df_numeric.columns, inplace= True)
+
+print("\n",df_numeric.columns.values)
+
+df_numeric = factor_analysis.feature_selection(df_numeric, target, len(df_numeric.axes[0]))
+
+print("\n",df_numeric.columns.values)
+
+df = pd.concat([df, df_numeric], axis = 1)
 
 # Create  dictionary that keeps attribute names, while addingg dummy columns or creating bins update dictionary to get this new added columns
 mp = {}
@@ -47,25 +64,11 @@ mp = {}
 for header in headers:
     mp[header] = header
 
-# After this point we get header names using dictionary
-n_c = Numerical_Data.numeric_columns(df)
-df_t = df[n_c]
-
-pca.pca_analysis(df_t)
-
-df.drop(columns=df_t.columns, inplace= True)
-
-df_t = factor_analysis.feature_selection(df_t, target)
-
-df = pd.concat([df, df_t], axis = 1)
-
-
-print("\n",df_t.head())
-
 
 for attribute in group_list:
     if not (attribute in df.columns):
-        print("Sorry, this attribute {} is not correlated to target".format(attribute))
+        print("\nSorry, this attribute {} is not correlated to target".format(attribute))
+        continue
 
     if (df[attribute].nunique() <= 5):
         # Pass numerical variables for sake of simplicity 
@@ -79,21 +82,7 @@ for attribute in group_list:
 
 print("\n New columns: ", df.columns.values)
 
+# After this point we get header names using dictionary
+
 
 df.to_csv(file_path + "df_new.csv", index = False)
-
-#Regression
-model, mse, r2, df = Regression.perform_multiple_linear_regression(df, target, group_list, mp)
-
-# Print regression results
-print("\nMultiple Linear Regression Results:")
-print("Coefficients:", model.coef_)
-print("Intercept:", model.intercept_)
-print("Mean Squared Error (MSE):", mse)
-print("R-squared (R2):", r2)
-
-
-
-
-
-
