@@ -1,11 +1,9 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from factor_analyzer import FactorAnalyzer
+import Numerical_Data
 
 def feature_selection(df, target, no_retains = 10, limit = 0.5):
-
-    if target in df.columns:
-        df = df.drop(target, axis = 1)
 
     fa = FactorAnalyzer(n_factors=no_retains, rotation='varimax')
     fa.fit(df)
@@ -19,7 +17,7 @@ def feature_selection(df, target, no_retains = 10, limit = 0.5):
     sum = 0
 
     for i in range(len(factor_loadings)):
-        sum += factor_loadings[i][0]
+        sum += abs(factor_loadings[i][0])
     
     limit = sum / len(factor_loadings)
 
