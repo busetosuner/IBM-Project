@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import dummy_variables
 
 #BINNING
 
@@ -12,7 +13,7 @@ def is_numeric(col):
 
 def make_bins(df, header):
     if is_numeric(df[header]):
-        
+
         min_val = df[header].min()
         max_val = df[header].max()
         
@@ -28,8 +29,8 @@ def make_bins(df, header):
         
     else:
         # Categorical column
-        top_10_values = df[header].value_counts().head(10).index.tolist()
-        binned_column = df[header].apply(lambda x: x if x in top_10_values else 'Other')
+        top_5_values = df[header].value_counts().head(5).index.tolist()
+        binned_column = df[header].apply(lambda x: x if x in top_5_values else 'Other')
         
         # Updating df
         df[header + '_binned'] = binned_column
@@ -37,4 +38,4 @@ def make_bins(df, header):
     # Drop the original column
     df.drop(header, axis=1, inplace=True)
 
-    return df, header + "_binned"
+    return dummy_variables.create_dummies(df, header + "_binned")
