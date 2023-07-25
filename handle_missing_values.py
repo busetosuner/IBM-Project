@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import Binning
 """
 To achieve more reliable results, the following methods will be applied in this project:
     - Missing numeric values will be replaced with mean value in the column
@@ -8,7 +8,7 @@ To achieve more reliable results, the following methods will be applied in this 
     - If the missing values is in the target column, then the row will be dropped
 """
 
-def clean_missing(df, target):
+def clean_missing(df, target = None):
     # Get headers
     headers = df.columns.values
 
@@ -24,20 +24,14 @@ def clean_missing(df, target):
 
     avg = (df.isnull().sum()).sum()/(len(df.axes[0])*len(df.axes[1])*100)
 
-    print("The missing value percentage: %{:.3f}".format(avg))
-    # Missing data in target column
-    df.dropna(subset=[target], axis=0, inplace=True)
+    # print("The missing value percentage: %{:.3f}".format(avg))
 
-    # Missing strings and numeric values
-    def is_numeric(col):
-        try:
-            pd.to_numeric(col)
-            return True
-        except:
-            return False
+    # Missing data in target column
+    if target != None:
+        df.dropna(subset=[target], axis=0, inplace=True)
 
     for header in headers:
-        if is_numeric(df[header]) :
+        if Binning.is_numeric(df[header]) :
             avg = df[header].astype('float').mean(axis=0) 
 
             avg = int(avg) # year, age, model cannot be float
