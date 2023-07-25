@@ -35,16 +35,17 @@ def get_labels(df, centroids):
     return distances.idxmin(axis=1)
 
 def new_centroids(df, labels, k):
+    np.seterr(divide = 'ignore')
     centroids = df.groupby(labels).apply(lambda x: np.exp(np.log(x).mean())).T
     return centroids
 
 def cluster(df, k):
     X = df 
-    kmeans = KMeans(n_clusters=k)
+    kmeans = KMeans(n_clusters=k, n_init='auto')
     kmeans.fit(X)
 
     identified_clusters = kmeans.fit_predict(X)
-    print("Identified Clusters: ", identified_clusters)
+    # print("Identified Clusters: ", identified_clusters)
 
     data_with_clusters = df.copy()
     data_with_clusters['Clusters'] = identified_clusters
@@ -53,7 +54,7 @@ def cluster(df, k):
     # print("Centroids: \n", centroids)
 
     labels = get_labels(df, centroids)
-    #print("Labels counts: ", labels.value_counts())
+    # print("Labels counts: ", labels.value_counts())
 
     old_centroids = pd.DataFrame()
 
@@ -70,7 +71,6 @@ def cluster(df, k):
         iteration += 1
     plt.show()
 
-  
 """   
     plt.scatter(df.iloc[:,0], df.iloc[:,1], c=data_with_clusters['Clusters'], cmap='rainbow')
     plt.show()    
