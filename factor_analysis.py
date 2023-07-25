@@ -8,14 +8,9 @@ def feature_selection(df, target, no_retains = 10, limit = 0.5):
     fa = FactorAnalyzer(n_factors=no_retains, rotation='varimax')
     fa.fit(df)
 
-    print(fa)
-
     factor_loadings = fa.loadings_
 
-    print(factor_loadings)
-
     sum = 0
-
     for i in range(len(factor_loadings)):
         sum += abs(factor_loadings[i][0])
     
