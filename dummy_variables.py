@@ -17,4 +17,4 @@ def create_dummies(df, header):
     # Drop the original column
     df.drop(header, axis=1, inplace=True)
 
-    return df, dummy_variable.columns.values
+    return df
