@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import warnings
+warnings.filterwarnings("ignore")
 
 import Import_File
 import Binning
@@ -15,16 +17,9 @@ import factor_analysis
 import classification
 import clustering
 
-
-
 # Path will be given by user
-file_path = 'C:\\Users\\hacer\\OneDrive\\Masaüstü\\IBM\\datasets\\'
 
-df = Import_File.check_data_format(file_path + "ds_salaries.csv")
-
-df.to_csv(file_path + "df_new.csv", index = False)
-
-df = pd.read_csv(file_path + "df_new.csv", index_col = False)
+df, file_path = Import_File.check_data_format()
 
 # Get input from user
 headers = df.columns.values
@@ -32,19 +27,44 @@ headers = df.columns.values
 for i, header in enumerate(headers):
     print(i," ", header)
 
-# Inputs: target = 7, attributes = 2 8 11
 target = headers[int(input("Please enter index of target attribute: "))]
-group_list = [headers[int(item)] for item in input("Please enter the index of attributes you want: ").split()]
+group_list = [headers[int(item)] for item in input("Please enter the index of attributes you want(leave blank for all): ").split()]
 
+if len(group_list) != 0:
+    if not target in group_list:
+        group_list.append(target)
+    df = df[group_list]
+
+print("\nData is preparing...")
 df = handle_missing_values.clean_missing(df, target)
 df = Duplicates.clean_duplicates(df)
 
-df = Numerical_Data.drop_outliers(df)
-df = Numerical_Data.normalization(df)
-df = Numerical_Data.standardization(df)
+# Convert numeric columns to numeric in pandas for further operations
+for column in df.columns.values:
+    if not (Binning.is_numeric(df[column])):
+        continue
+    df[column] = pd.to_numeric(df[column])
 
-n_c = Numerical_Data.numeric_columns(df)
-df_numeric = df[n_c]
+df = Numerical_Data.drop_outliers(df)
+# Normalization and standardization will be used in just necessary parts
+# df = Numerical_Data.normalization(df)
+# df = Numerical_Data.standardization(df)
+
+for attribute in df.columns.values:
+    if  (attribute == target):
+        continue
+
+    if (df[attribute].nunique() <= 5):
+        # Pass numerical variables for sake of simplicity 
+        if (Binning.is_numeric(df[attribute])):
+            continue
+        df = dummy_variables.create_dummies(df, attribute)
+    else:
+        df = Binning.make_bins(df, attribute)
+
+print("\n New columns: ", df.columns.values)
+
+df_numeric = df[Numerical_Data.numeric_columns(df)]
 
 if target in df_numeric.columns:
     df_numeric = df_numeric.drop(target, axis = 1)
@@ -53,50 +73,20 @@ pca.pca_analysis(df_numeric)
 
 df.drop(columns=df_numeric.columns, inplace= True)
 
-print("\n",df_numeric.columns.values)
-
 df_numeric = factor_analysis.feature_selection(df_numeric, target, len(df_numeric.axes[0]))
-
-print("\n",df_numeric.columns.values)
 
 df = pd.concat([df, df_numeric], axis = 1) 
 
-# Create  dictionary that keeps attribute names, while addingg dummy columns or creating bins update dictionary to get this new added columns
-mp = {}
+# After selection update df_numeric
+df_numeric = df[Numerical_Data.numeric_columns(df)]
 
-for header in headers:
-    mp[header] = header
+model, mse, r2, df = Regression.perform_multiple_linear_regression(df_numeric, target)
 
-
-for attribute in group_list:
-    if not (attribute in df.columns):
-        print("\nSorry, this attribute {} is not correlated to target".format(attribute))
-        continue
-
-    if  (attribute == target):
-        print("\nSorry, the target cannot be encoded")
-        continue
-
-    if (df[attribute].nunique() <= 5):
-        # Pass numerical variables for sake of simplicity 
-        if (Binning.is_numeric(df[attribute])):
-            continue
-
-        df, mp[attribute] = dummy_variables.create_dummies(df, attribute)
-    else:
-        df, mp[attribute] = Binning.make_bins(df, attribute)
-    print("\nNew columns of",attribute,":",mp[attribute])
-
-print("\n New columns: ", df.columns.values)
-
-# Regression.perform_multiple_linear_regression(df, target, group_list, mp)
-
-# After this point we get header names using dictionary
-if(len(df[Numerical_Data.numeric_columns(df)].axes[1]) < 20):
-    classification.KNN(df[Numerical_Data.numeric_columns(df)], df[mp[target]], 3)
+if(len(df_numeric.axes[1]) < 20):
+    classification.KNN(df_numeric, df[target], 3)
 else:
     print("Sorry, this to much :(")
 
-# clustering.cluster(df[Numerical_Data.numeric_columns(df)], 3)
+clustering.cluster(df_numeric, 3)
 
-df.to_csv(file_path + "df_new.csv", index = False)
+df.to_csv(file_path, index = False)
