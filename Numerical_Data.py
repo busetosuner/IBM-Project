@@ -15,9 +15,6 @@ def numeric_columns(df):
 def detect_outliers(data, threshold=3):
     outliers = []
     for column in data.columns:
-        pd.options.mode.chained_assignment = None  # default='warn'
-        data[column] = pd.to_numeric(data[column])
-        print(column)
         # Z-puanı için
         z_scores = (data[column] - data[column].mean()) / data[column].std()
         # Z-puanının threshold değerinden büyük olanları aykırı değer olarak işaretle
@@ -37,20 +34,20 @@ def drop_outliers(df):
     # Outlierları çıkarmak için
     df_cleaned_no_outliers = df.drop(pd.DataFrame(outliers).reset_index(drop=True))
 
-    print("Without outliers Data:")
-    print(df_cleaned_no_outliers.head())
+    # print("Without outliers Data:")
+    # print(df_cleaned_no_outliers.head())
 
     return df_cleaned_no_outliers
 
 # NORMALIZATION
 def normalization(df):
     numeric_Columns = numeric_columns(df)
-    scaler = MinMaxScaler()
+    scaler = MinMaxScaler(feature_range=(0, 10))
     for column in numeric_Columns:
         df[column] = scaler.fit_transform(df[[column]])
 
-    print("Normalized Data:")
-    print(df.head())
+    # print("Normalized Data:")
+    # print(df.head())
 
     return df
 
@@ -61,7 +58,7 @@ def standardization(df):
     scaler = StandardScaler()
     for column in numeric_Columns:
         df[column] = scaler.fit_transform(df[[column]])
-    print("Standardized Data:")
-    print(df.head())
+    # print("Standardized Data:")
+    # print(df.head())
 
     return df   
