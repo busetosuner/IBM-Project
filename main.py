@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import warnings
+from sklearn.preprocessing import OrdinalEncoder
 warnings.filterwarnings("ignore")
 
 import Import_File
@@ -13,10 +14,9 @@ import Correlation
 
 import handle_missing_values
 import dummy_variables
-import pca
-import factor_analysis
 import classification
 import clustering
+import feature_selection
 
 # Path will be given by user
 
@@ -35,6 +35,8 @@ if len(group_list) != 0:
     if not target in group_list:
         group_list.append(target)
     df = df[group_list]
+elif "Unnamed: 0" in df.columns.values:
+    df = df.drop("Unnamed: 0", axis = 1)
 
 print("\nData is preparing...")
 df = handle_missing_values.clean_missing(df, target)
@@ -53,6 +55,9 @@ df = Numerical_Data.drop_outliers(df)
 
 for attribute in df.columns.values:
     if  (attribute == target):
+        if (not Binning.is_numeric(df[target])):
+            encoder = OrdinalEncoder()
+            df[target] = encoder.fit_transform(df[[target]])
         continue
 
     if (df[attribute].nunique() <= 5):
@@ -70,28 +75,29 @@ df_numeric = df[Numerical_Data.numeric_columns(df)]
 if target in df_numeric.columns:
     df_numeric = df_numeric.drop(target, axis = 1)
 
-pca.pca_analysis(df_numeric)
+feature_selection.pc_analysis(df_numeric)
 
-df.drop(columns=df_numeric.columns, inplace= True)
+# df.drop(columns=df_numeric.columns, inplace= True)
 
-df_numeric = factor_analysis.feature_selection(df_numeric, target, len(df_numeric.axes[0]))
+# feature_selection.factor_analysis(df_numeric, len(df_numeric.axes[0]))
 
-df = pd.concat([df, df_numeric], axis = 1) 
+#df = pd.concat([df, df_numeric], axis = 1) 
+
+to_drop =feature_selection.eliminate_with_corr(df_numeric)
+df = df.drop(to_drop, axis=1)
 
 # After selection update df_numeric
 df_numeric = df[Numerical_Data.numeric_columns(df)]
 
 target_correlation = Correlation.calculate_correlation(df, target)
 
-print("\nTarget ({}):".format(target))
-print(target_correlation)
 
 model, mse, r2, df = Regression.perform_multiple_linear_regression(df_numeric, target)
 
 if(len(df_numeric.axes[1]) < 20):
     classification.KNN(df_numeric, target, 3)
 else:
-    print("Sorry, this to much :(")
+    print("Sorry, this to much for KNN classification :(")
 
 classification.decision_trees(df, target)
 
