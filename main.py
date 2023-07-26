@@ -17,6 +17,7 @@ import pca
 import factor_analysis
 import classification
 import clustering
+import classification
 
 # Path will be given by user
 
@@ -96,3 +97,30 @@ else:
 clustering.cluster(df_numeric, 3)
 
 df.to_csv(file_path, index = False)
+
+
+# classification
+
+# KNN 
+knn_score = classification.KNN(df[Numerical_Data.numeric_columns(df)], df[mp[target]].squeeze(), k=5)
+
+# Decision Trees 
+dtree_score = classification.decision_trees(df[Numerical_Data.numeric_columns(df)], df[mp[target]].squeeze())
+
+
+if knn_score > dtree_score:
+    print("Best Algorithm: K-nearest neighbor (KNN)")
+    # Apply K-nearest neighbor algorithm
+    classification.KNN(df[Numerical_Data.numeric_columns(df)], df[mp[target]], 3)
+else:
+    print("Best Algorithm: Decision Trees")
+    # Apply Decision Trees algorithm
+    classification.decision_trees(df[Numerical_Data.numeric_columns(df)], df[mp[target]].squeeze())
+
+
+
+
+
+
+
+
