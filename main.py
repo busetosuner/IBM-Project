@@ -9,6 +9,7 @@ import Binning
 import Numerical_Data
 import Duplicates
 import Regression
+import Correlation 
 
 import handle_missing_values
 import dummy_variables
@@ -79,6 +80,11 @@ df = pd.concat([df, df_numeric], axis = 1)
 
 # After selection update df_numeric
 df_numeric = df[Numerical_Data.numeric_columns(df)]
+
+target_correlation = Correlation.calculate_correlation(df, target)
+
+print("\nTarget ({}):".format(target))
+print(target_correlation)
 
 model, mse, r2, df = Regression.perform_multiple_linear_regression(df_numeric, target)
 
