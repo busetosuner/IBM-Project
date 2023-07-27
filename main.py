@@ -49,8 +49,8 @@ for column in df.columns.values:
 
 df = Numerical_Data.drop_outliers(df)
 # Normalization and standardization will be used in just necessary parts
-# df = Numerical_Data.normalization(df)
-# df = Numerical_Data.standardization(df)
+df = Numerical_Data.normalization(df)
+df = Numerical_Data.standardization(df)
 
 for attribute in df.columns.values:
     if  (attribute == target):
@@ -69,7 +69,7 @@ for attribute in df.columns.values:
 
 print("\n New columns: ", df.columns.values)
 
-feature_selection.decide(df, target)
+df = feature_selection.decide(df, target)
 
 df_numeric = df[Numerical_Data.numeric_columns(df)]
 
