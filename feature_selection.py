@@ -90,9 +90,13 @@ def factor_analysis(df, threshold = 0.5):
 
     # print("\nLimit: ",threshold)
     
-    selected_columns = df.columns[abs(factor_loadings)[0] >= threshold]
+    selected_columns = df.columns[abs(factor_loadings[0]) >= threshold].tolist()
+
+    new_factor = pd.Series(abs(factor_loadings[:,0]))
+    
     if (len(selected_columns) == 0):
-        selected_columns.append(df.columns[abs(factor_loadings[0]).idxmax()])
+        selected_columns.append(df.columns.tolist()[new_factor.argmax()])
+
     return selected_columns, cumulative_variance
 
 plt.style.use('default')
@@ -117,7 +121,7 @@ def pc_analysis(df, threshold=0.5):
             selected_columns.append(column_names[i])
 
     if (len(selected_columns) == 0):
-        selected_columns.append(column_names[dfa_loadings["PC1"].abs().idxmax()])
+        selected_columns.append(dfa_loadings["PC1"].abs().idxmax())
     explained_variance = pca.explained_variance_ratio_
     # print("\nExplained variance: \n", explained_variance)
 
