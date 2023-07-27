@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-import seaborn as sns
 import warnings
 from sklearn.preprocessing import OrdinalEncoder
 warnings.filterwarnings("ignore")
@@ -10,15 +8,14 @@ import Binning
 import Numerical_Data
 import Duplicates
 import Regression
-import Correlation 
+import Correlation
+import clustering2 
 
 import handle_missing_values
 import dummy_variables
 import classification
 import clustering
 import feature_selection
-import clustering
-
 
 # Path will be given by user
 
@@ -72,27 +69,11 @@ for attribute in df.columns.values:
 
 print("\n New columns: ", df.columns.values)
 
-df_numeric = df[Numerical_Data.numeric_columns(df)]
+feature_selection.decide(df, target)
 
-if target in df_numeric.columns:
-    df_numeric = df_numeric.drop(target, axis = 1)
-
-feature_selection.pc_analysis(df_numeric)
-
-# df.drop(columns=df_numeric.columns, inplace= True)
-
-# feature_selection.factor_analysis(df_numeric, len(df_numeric.axes[0]))
-
-#df = pd.concat([df, df_numeric], axis = 1) 
-
-to_drop =feature_selection.eliminate_with_corr(df_numeric)
-df = df.drop(to_drop, axis=1)
-
-# After selection update df_numeric
 df_numeric = df[Numerical_Data.numeric_columns(df)]
 
 target_correlation = Correlation.calculate_correlation(df, target)
-
 
 model, mse, r2, df = Regression.perform_multiple_linear_regression(df_numeric, target)
 
@@ -103,11 +84,6 @@ else:
 
 classification.decision_trees(df, target)
 
-clustering.cluster(df_numeric, 3)
+clustering2.cluster(df_numeric, 3)
 
 df.to_csv(file_path, index = False)
-
-#clustering
-
-clustering.cluster(df[Numerical_Data.numeric_columns(df)], 3)
-
