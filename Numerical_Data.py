@@ -42,7 +42,7 @@ def drop_outliers(df):
 # NORMALIZATION
 def normalization(df):
     numeric_Columns = numeric_columns(df)
-    scaler = MinMaxScaler(feature_range=(0, 10))
+    scaler = MinMaxScaler(feature_range=(0, 1))
     for column in numeric_Columns:
         df[column] = scaler.fit_transform(df[[column]])
 
