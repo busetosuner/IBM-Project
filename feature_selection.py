@@ -91,6 +91,8 @@ def factor_analysis(df, threshold = 0.5):
     # print("\nLimit: ",threshold)
     
     selected_columns = df.columns[abs(factor_loadings)[0] >= threshold]
+    if (len(selected_columns) == 0):
+        selected_columns.append(df.columns[abs(factor_loadings[0]).idxmax()])
     return selected_columns, cumulative_variance
 
 plt.style.use('default')
@@ -114,6 +116,8 @@ def pc_analysis(df, threshold=0.5):
         if abs(loading) >= threshold:
             selected_columns.append(column_names[i])
 
+    if (len(selected_columns) == 0):
+        selected_columns.append(column_names[dfa_loadings["PC1"].abs().idxmax()])
     explained_variance = pca.explained_variance_ratio_
     # print("\nExplained variance: \n", explained_variance)
 
