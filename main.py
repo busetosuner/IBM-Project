@@ -17,6 +17,8 @@ import dummy_variables
 import classification
 import clustering
 import feature_selection
+import clustering
+
 
 # Path will be given by user
 
@@ -104,3 +106,8 @@ classification.decision_trees(df, target)
 clustering.cluster(df_numeric, 3)
 
 df.to_csv(file_path, index = False)
+
+#clustering
+
+clustering.cluster(df[Numerical_Data.numeric_columns(df)], 3)
+
