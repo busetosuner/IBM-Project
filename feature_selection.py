@@ -178,18 +178,18 @@ def svd(df, threshold = 0.5 ):
 def decide(df, target):
     to_drop = eliminate_with_corr(df)
     df.drop(to_drop, axis=1, inplace= True)
-
+    """ 
     selectedbyForward = forward_selection(df, target)
     selectedbyBackward = backward_elimination(df, target)
     
     print("Forward Selection: ", selectedbyForward)
 
-    print("Backward Elimination: ", selectedbyBackward)
-
+    print("Backward Elimination: ", selectedbyBackward) """
+    target_col = df[target]
     df = prepare(df, target)
     selectedbyPCA, pc_cumulative = pc_analysis(df)
     selectedbyFA, fa_cumulative = factor_analysis(df)
-    selectedbSVD, svd_cumulative = svd(df)
+    # selectedbSVD, svd_cumulative = svd(df)
 
     # sfs = feature_selection.sfs(df, target, 5)
 
@@ -198,4 +198,12 @@ def decide(df, target):
 
     print("Cumulative of PCA: ", pc_cumulative[-1])
     print("Cumulative of FA: ", fa_cumulative[-1])
-    print("Cumulative of SVD: ", svd_cumulative[-1])
+
+    if(fa_cumulative[-1] > pc_cumulative[-1]):
+        print("Featues are selected by FA")
+        df = pd.concat([df[selectedbyFA], target_col], axis = 1)
+    else:
+        print("Featues are selected by PCA")
+        df = pd.concat([df[selectedbyPCA], target_col], axis = 1)
+    # print("Cumulative of SVD: ", svd_cumulative[-1])
+    return df
