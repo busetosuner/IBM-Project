@@ -6,7 +6,7 @@ import numpy as np
 # if there are equal or less than 3 unique values turn into dummy variables
 def create_dummies(df, header):
     # Create new dataframe for dummy variables
-    dummy_variable = pd.get_dummies(df[header], prefix=header)
+    dummy_variable = pd.get_dummies(df[header], prefix=header, drop_first=True) # To avoid dummy variable trap drop_first is true
 
     # Turn True/False into 1/0 
     dummy_variable = dummy_variable.astype(int)
