@@ -2,13 +2,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def calculate_correlation(df, target):
-    # Korelasyon matrisi için sayısal sütunları seç
+    
     numeric_columns = df.select_dtypes(include='number').columns
 
-    # Korelasyon matrisini hesaplama
+    
     correlation_matrix = df[numeric_columns].corr()
 
-    # Sadece hedef değişken ile olan korelasyonu al
+    
     target_correlation = correlation_matrix[target]
     
     #print("\nTarget ({}):".format(target))
@@ -24,6 +24,6 @@ def calculate_correlation(df, target):
     print("This attiributes are highly correlated with target: \n",highly_corr)
     return target_correlation
     
-    #Görselleştirmek için
+    
 
                     
