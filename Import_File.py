@@ -1,4 +1,4 @@
-from tkinter import messagebox
+
 import os
 import pandas as pd
 import sys
@@ -6,12 +6,7 @@ import sys
 from tkinter import * 
 from tkinter import filedialog
 import tkinter as tk
-
-# Function to display the welcome message
-def welcome_message(root):
-    root.withdraw()  # Hide the main tkinter window
-    welcome_msg = "Welcome to Scourgify! Please select a dataset to proceed."
-    messagebox.showinfo("Welcome", welcome_msg)
+import user_interface
 
 def browse_file(root):
     
@@ -24,10 +19,13 @@ def browse_file(root):
 
 
 
+
+
+
 # Hangi data formatında kontrol ediyor
 def check_data_format():
     root = tk.Tk()
-    welcome_message(root)  # Display welcome message
+    user_interface.welcome_message(root)  # Display welcome message
     file_path = browse_file(root)
     _, file_extension = os.path.splitext(file_path)
     
