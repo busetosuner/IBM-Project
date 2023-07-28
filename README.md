@@ -45,6 +45,8 @@ The project is structured as follows:
 
 • Modeling: Contains functions for Regression, Classification and Clustering. Visualise the outcomes using Python libraries.
 
+• Evaluation: Evaluates modeling using over and underfitting functions. 
+
 • User_Interface: Includes functions for preparing and organizing data for modeling.
 
 
