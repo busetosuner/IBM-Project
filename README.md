@@ -37,12 +37,13 @@ The project is structured as follows:
 
 • Data_Collection: Contains functions to import files and check data format.
 
+• Data_Cleaning: Contains functions for handling missing values and duplicate records.
+
 • Feature_Engineering: Includes modules for binning, handling numerical data, and creating dummy variables.
 
-• Data_Cleaning: Contains functions for handling missing values and duplicate records.
-Modeling: Includes modules for regression, classification, and clustering tasks.
-
 • EDA: Contains functions to calculate correlations between attributes.
+
+• Modeling: Contains functions for Regression, Classification and Clustering. Visualise the outcomes using Python libraries.
 
 • User_Interface: Includes functions for preparing and organizing data for modeling.
 
@@ -52,17 +53,17 @@ Modeling: Includes modules for regression, classification, and clustering tasks.
 2) Provide the file path to your dataset when prompted.
 3) Choose the target attribute and the group of attributes you want to work with, if required.
 4) The project will then perform the following tasks in sequence:
-5) Clean missing values and duplicates.
-6) Convert numeric columns to numerical format.
-7) Perform data preprocessing steps such as dropping outliers, normalization, and standardization.
-8) Handle target attribute encoding if it is non-numeric.
-9) Create dummy variables or apply binning as needed for categorical attributes.
-10) Perform feature selection.
-11) Calculate correlation with the target attribute.
-12) Perform multiple linear regression modeling.
-13) Perform K-Nearest Neighbors (KNN) classification.
-14) Perform decision tree classification.
-15) Save the processed dataset to a CSV file.
+  -Clean missing values and duplicates.
+  -Convert numeric columns to numerical format.
+  -Perform data preprocessing steps such as dropping outliers, normalization, and standardization.
+  -Handle target attribute encoding if it is non-numeric.
+  -Create dummy variables or apply binning as needed for categorical attributes.
+  -Perform feature selection.
+  -Calculate correlation with the target attribute.
+  -Perform multiple linear regression modeling.
+  -Perform K-Nearest Neighbors (KNN) classification.
+  -Perform decision tree classification and clustering.
+  -Save the processed dataset to a CSV file.
 
 
 # Conclusion
