@@ -36,7 +36,8 @@ $ pip install pandas scikit-learn
 The project is structured as follows:
 
 • Data_Collection: Contains functions to import files and check data format.
-Feature_Engineering: Includes modules for binning, handling numerical data, and creating dummy variables.
+
+• Feature_Engineering: Includes modules for binning, handling numerical data, and creating dummy variables.
 
 • Data_Cleaning: Contains functions for handling missing values and duplicate records.
 Modeling: Includes modules for regression, classification, and clustering tasks.
