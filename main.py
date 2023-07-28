@@ -44,11 +44,7 @@ group_list = [headers[int(item)] for item in group_list_input.split()] if group_
 
 
 
-
 User_Interface.prepare_data(df, target)
-
-
-
 
 
 if len(group_list) != 0:
@@ -57,12 +53,6 @@ if len(group_list) != 0:
     df = df[group_list]
 elif "Unnamed: 0" in df.columns.values:
     df = df.drop("Unnamed: 0", axis=1)
-
-
-
-
-
-
 
 
 # Clean missing values and duplicates
@@ -104,6 +94,8 @@ df_numeric = df[Numerical_Data.numeric_columns(df)]
 
 target_correlation = Correlation.calculate_correlation(df, target)
 
+anova.perform_anova(df, target)
+
 model, mse, r2, df_numeric = Regression.perform_multiple_linear_regression(df_numeric, target)
 
 if len(df_numeric.axes[1]) < 20:
@@ -113,9 +105,7 @@ else:
 
 Classification.decision_trees(df, target)
 
-#clustering2.cluster(df_numeric, 3)
-
-df.to_csv(file_path, index=False)
+Clustering.cluster(df_numeric, 3)
 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(df_numeric, df[target], test_size=0.2, random_state=42)
@@ -131,3 +121,5 @@ if int(mse_train) == 0.00 and int(mse_test) == 0.00:
 else:
     print("Regression Model has good performance.")
     print(f"Regression Model - MSE for Training: {mse_train:.2f}, MSE for Test: {mse_test:.2f}")
+
+df.to_csv(file_path, index=False)
