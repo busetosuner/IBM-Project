@@ -9,15 +9,16 @@ import Feature_Engineering.Numerical_Data as Numerical_Data
 import Data_Cleaning.Duplicates as Duplicates
 import Modeling.Regression as Regression
 import EDA.Correlation as Correlation
-#import clustering2 
+import EDA.Anova as Anova
+
 
 import Data_Cleaning.Handle_Missing_Values as Handle_Missing_Values
-import Feature_Engineering.dummy_variables as dummy_variables
+import Feature_Engineering.dummy_variables as Dummy_Variables
 import Modeling.Classification as Classification
 import Modeling.Clustering as Clustering
-import Feature_Engineering.feature_selection as feature_selection
+import Feature_Engineering.feature_selection as Feature_Selection
 import User_Interface.User_Interface as User_Interface
-import Fitting.Over_UnderFitting as Over_UnderFitting
+import Evaluation.Over_UnderFitting as Over_UnderFitting
 
 # Import UI functions from separate files
 
@@ -94,7 +95,7 @@ df_numeric = df[Numerical_Data.numeric_columns(df)]
 
 target_correlation = Correlation.calculate_correlation(df, target)
 
-anova.perform_anova(df, target)
+Anova.perform_anova(df, target)
 
 model, mse, r2, df_numeric = Regression.perform_multiple_linear_regression(df_numeric, target)
 
