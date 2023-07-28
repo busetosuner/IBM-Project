@@ -103,16 +103,18 @@ plt.style.use('default')
  
 # 
 def pc_analysis(df, threshold=0.5):
+    if(len(df.axes[0]) < 2):
+        return [], 0
     X = scale(df)
-    pca = decomposition.PCA(n_components=3)
+    pca = decomposition.PCA(n_components=2)
     pca.fit(X)
 
     scores = pca.transform(X)
-    scores_df = pd.DataFrame(scores, columns=["PC1", "PC2", "PC3"])
+    scores_df = pd.DataFrame(scores, columns=["PC1", "PC2"])
     # print("Scores df:\n ", scores_df.head())
 
     loadings = pca.components_.T
-    dfa_loadings = pd.DataFrame(loadings, columns=["PC1", "PC2", "PC3"], index=df.columns.values)
+    dfa_loadings = pd.DataFrame(loadings, columns=["PC1", "PC2"], index=df.columns.values)
     # print("Dfa loadings: \n",dfa_loadings.head())
     column_names = list(dfa_loadings.index)
     selected_columns = []
