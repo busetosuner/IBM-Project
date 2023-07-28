@@ -53,16 +53,27 @@ The project is structured as follows:
 2) Provide the file path to your dataset when prompted.
 3) Choose the target attribute and the group of attributes you want to work with, if required.
 4) The project will then perform the following tasks in sequence:
+   
   -Clean missing values and duplicates.
+   
   -Convert numeric columns to numerical format.
+  
   -Perform data preprocessing steps such as dropping outliers, normalization, and standardization.
+  
   -Handle target attribute encoding if it is non-numeric.
+  
   -Create dummy variables or apply binning as needed for categorical attributes.
+  
   -Perform feature selection.
+  
   -Calculate correlation with the target attribute.
+  
   -Perform multiple linear regression modeling.
+  
   -Perform K-Nearest Neighbors (KNN) classification.
+  
   -Perform decision tree classification and clustering.
+  
   -Save the processed dataset to a CSV file.
 
 
