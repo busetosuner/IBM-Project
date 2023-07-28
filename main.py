@@ -17,6 +17,7 @@ import Modeling.Classification as Classification
 import Modeling.Clustering as Clustering
 import Feature_Engineering.feature_selection as feature_selection
 import User_Interface.User_Interface as User_Interface
+import Fitting.Over_UnderFitting as Over_UnderFitting
 
 # Import UI functions from separate files
 
@@ -103,7 +104,7 @@ df_numeric = df[Numerical_Data.numeric_columns(df)]
 
 target_correlation = Correlation.calculate_correlation(df, target)
 
-model, mse, r2, df = Regression.perform_multiple_linear_regression(df_numeric, target)
+model, mse, r2, df_numeric = Regression.perform_multiple_linear_regression(df_numeric, target)
 
 if len(df_numeric.axes[1]) < 20:
     Classification.KNN(df_numeric, target, 3)
@@ -115,3 +116,18 @@ Classification.decision_trees(df, target)
 #clustering2.cluster(df_numeric, 3)
 
 df.to_csv(file_path, index=False)
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(df_numeric, df[target], test_size=0.2, random_state=42)
+
+
+# Evaluate overfitting for the regression model
+regression_model = model
+mse_train, mse_test = Over_UnderFitting.evaluate_overfitting(regression_model, X_train, y_train, X_test, y_test)
+
+
+if int(mse_train) == 0.00 and int(mse_test) == 0.00:
+    print("Regression Model indicates overfitting.")
+else:
+    print("Regression Model has good performance.")
+    print(f"Regression Model - MSE for Training: {mse_train:.2f}, MSE for Test: {mse_test:.2f}")
