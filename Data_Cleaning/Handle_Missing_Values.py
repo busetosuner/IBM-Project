@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
-import Binning
+
+import Feature_Engineering.Binning as Binning
+
 """
 To achieve more reliable results, the following methods will be applied in this project:
     - Missing numeric values will be replaced with mean value in the column
