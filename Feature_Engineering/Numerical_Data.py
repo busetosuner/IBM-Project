@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-import Binning
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+import Feature_Engineering.Binning as Binning
 
 def numeric_columns(df):
     numeric_columns = []
@@ -11,13 +12,13 @@ def numeric_columns(df):
 
     return numeric_columns
 
-# Outlier tespiti
+# Outlier detection
 def detect_outliers(data, threshold=3):
     outliers = []
     for column in data.columns:
-        # Z-puanı için
+        # Calculate Z-score 
         z_scores = (data[column] - data[column].mean()) / data[column].std()
-        # Z-puanının threshold değerinden büyük olanları aykırı değer olarak işaretle
+        # Mark as outliers those greater than the threshold of the z-score
         outliers.extend(data[column][np.abs(z_scores) > threshold])
     return outliers
 
@@ -25,13 +26,13 @@ def drop_outliers(df):
     numeric_data = df[numeric_columns(df)]
     outliers = detect_outliers(numeric_data)
 
-    # Outlierların veri setindeki yüzdesini hesaplamak (outlierların veri setine etkisini görmek için)
+    # Calculate the percentage of outliers in the data set (to see the effect of outliers on the data set)
     outlier_percentage = len(outliers) / len(df) * 100
 
     print("Outlier persentage: %", outlier_percentage)
-    #print("Veri Seti Sütunlari:", df_cleaned.columns)
+    #print("Dataset Columns: ", df_cleaned.columns)
  
-    # Outlierları çıkarmak için
+    # Remove outliers
     df_cleaned_no_outliers = df.drop(pd.DataFrame(outliers).reset_index(drop=True))
 
     # print("Without outliers Data:")
