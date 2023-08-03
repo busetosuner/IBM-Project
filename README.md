@@ -66,16 +66,20 @@ The project is structured as follows:
   
   -Create dummy variables or apply binning as needed for categorical attributes.
   
-  -Perform feature selection.
+  -Perform feature selection using the best method for the dataset between PCA(Principal Component Analysis) and FA(Factor Analysis).
   
   -Calculate correlation with the target attribute.
+
+  -Perform ANOVA on the two given features and get F-value and P-value to understand correlation between them.
   
   -Perform multiple linear regression modeling.
   
-  -Perform K-Nearest Neighbors (KNN) classification.
+  -Perform K-Nearest Neighbors (KNN) and decision tree classification.
   
-  -Perform decision tree classification and clustering.
-  
+  -Perform K-Means and Agglomerative clustering algorithms.
+
+  -Evaluate the models for overfitting and underfitting.
+
   -Save the processed dataset to a CSV file.
 
 
