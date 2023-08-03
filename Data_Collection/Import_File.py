@@ -1,11 +1,12 @@
-
 import os
 import pandas as pd
 import sys
+import tkinter as tk
+
 from tkinter import messagebox
 from tkinter import * 
 from tkinter import filedialog
-import tkinter as tk
+
 import User_Interface.User_Interface as User_Interface
 
 def browse_file(root):
@@ -17,12 +18,6 @@ def browse_file(root):
     print(file_path)
     return file_path
 
-
-
-
-
-
-# Hangi data formatında kontrol ediyor
 def check_data_format():
     root = tk.Tk()
     User_Interface.welcome_message(root)  # Display welcome message
@@ -56,5 +51,3 @@ def check_data_format():
     df = pd.read_csv(file_path, index_col=False)
 
     return df, file_path
-
-
