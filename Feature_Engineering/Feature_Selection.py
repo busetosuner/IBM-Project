@@ -1,16 +1,16 @@
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, scale
-from factor_analyzer import FactorAnalyzer
-import Numerical_Data
-from sklearn import decomposition
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
-import Numerical_Data
-
 import statsmodels.api as sm
-from mlxtend.feature_selection import SequentialFeatureSelector as SFS
+
+from sklearn.preprocessing import StandardScaler, scale
 from sklearn.linear_model import LinearRegression
+from sklearn import decomposition
+from factor_analyzer import FactorAnalyzer
+from mpl_toolkits import mplot3d
+from mlxtend.feature_selection import SequentialFeatureSelector as SFS
+
+import Feature_Engineering.Numerical_Data as Numerical_Data
 
 def prepare(df, target):
     df_numeric = df[Numerical_Data.numeric_columns(df)]
