@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
-import dummy_variables
+
+import Feature_Engineering.Dummy_Variables as Dummy_Variables
 
 #BINNING
-
 def is_numeric(col):
     try:
         pd.to_numeric(col)
@@ -38,4 +38,4 @@ def make_bins(df, header):
     # Drop the original column
     df.drop(header, axis=1, inplace=True)
 
-    return dummy_variables.create_dummies(df, header + "_binned")
+    return Dummy_Variables.create_dummies(df, header + "_binned")
