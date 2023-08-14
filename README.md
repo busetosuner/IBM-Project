@@ -8,6 +8,8 @@ Welcome to our Data Science - Scrougify project!
 
 This project is designed to work with various datasets and perform data-related tasks such as data collection, cleaning, feature engineering, modeling, and interpretation. It utilizes several Python libraries to achieve these tasks and is organized into separate modules for different stages of the data science pipeline.
 
+This project was done as part of IBM Summer Internship'23.
+
 # Getting Started
 To use this project, you need to have Python installed on your system along with the required libraries. The main file to execute is main.py, which orchestrates the data processing workflow. Before running the code, ensure you have your dataset in a compatible format, and the file path will be given as input during execution.
 
